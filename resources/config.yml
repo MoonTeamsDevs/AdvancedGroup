@@ -1,0 +1,23 @@
+# You can use json, yml, sqlite or mysql.
+provider: "yml"
+# Optimizes performance and reduces lags. true or false
+cache: true
+database:
+  host: "127.0.0.1"
+  username: "YOUR USERNAME HERE"
+  password: "YOUR PASSWORD HERE"
+  # Name of your database
+  database: "mydb"
+  # 3306 is per default
+  port: 3306
+# Name of your sqlite database. PLEASE SET .sql AS EXTENSION
+sqlite: "mydb.sql"
+
+# Thanks to Ayzrix. (https://github.com/AyzrixYTB)
+extensions:
+  # {faction_name} {faction_rank} {faction_power} {faction_money}
+  SimpleFaction: false
+  # {faction_name} {faction_power}
+  FactionsPro: false
+  # {faction_name} {faction_rank} {faction_power}
+  PiggyFactions: false

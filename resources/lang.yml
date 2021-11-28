@@ -1,0 +1,17 @@
+# If the player does not have permission.
+no-permission: "§cYou do not have permission to use this."
+
+# If the group already exists.
+group-exist: "§cThis group already exists!"
+group-no-exist: "§cThis group does not exist."
+# If the group has been successfully created.
+successfully-group-create: "The group {group} has just been successfully created."
+successfully-group-remove: "The group {group} has been successfully deleted."
+successfully-set-format: "The format of the group {group} is now: {format}"
+successfully-add-group-permission: "The {permission} permission has just been added to the {group} group."
+successfully-list-group-perm: "This is the list of permissions for the group {group}: {permissions}"
+successfully-list-player-perm: "This is the list of permissions for the player {player}: {permissions}"
+show-groups: "Here is the list of existing groups ({count}): {groups}."
+no-in-data: "This player is not registered in our database."
+changed-group-player: "§aYour group is now set to {group}."
+changed-group: "§aYou have just set the player's group {player} to {group}."
