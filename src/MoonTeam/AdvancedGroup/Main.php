@@ -158,8 +158,8 @@ class Main extends PluginBase {
             new SetFormat("setformat", "Allows you to redefine the format of a group.", "setformat", []),
             new AddGPerm("addgperm", "Allows you to add a permission to a group.", "addgperm", []),
             new AddPPerm("addpperm", "Allows you to add a permission to a player.", "addpperm", []),
-            new ListGPerm("listgperm", "Allows you to see the list of permissions for a group.", "listgperm", []),
-            new ListPPerm("listpperm", "Allows you to see the list of permissions for a player.", "listpperm", []),
+            new ListGPerm("listgperms", "Allows you to see the list of permissions for a group.", "listgperm", []),
+            new ListPPerm("listpperms", "Allows you to see the list of permissions for a player.", "listpperm", []),
             new RemoveGPerm("removegperm", "Allows you to remove a permission to a group.", "removegperm", ["rmgperm"]),
             new RemovePPerm("removepperm", "Allows you to remove a permission from a player.", "removepperm", ["rmpperm"])
         ]);

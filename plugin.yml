@@ -5,6 +5,10 @@ authors:
   - Zoumi
 main: MoonTeam\AdvancedGroup\Main
 api: 3.0.0
+softdepend:
+  - SimpleFaction
+  - FactionsPro
+  - PiggyFactions
 
 permissions:
   ag.addgroup:
