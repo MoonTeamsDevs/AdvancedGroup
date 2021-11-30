@@ -11,12 +11,12 @@
 | `/groups`      	| ❌          	| Allows you to see the existing groups.                  	|
 | `/setgroup`    	| ❌          	| Allows you to define a player's group.                  	|
 | `/setformat`   	| ❌          	| Allows you to redefine the format of a group.           	|
-| `addgperm`     	| ❌          	| Allows you to add a permission to a group.              	|
-| `removegperm`  	| ❌          	| Allows you to remove a permission to a group.           	|
-| `addpperm`     	| ❌          	| Allows you to add a permission to a player.             	|
-| `removepperm`  	| ❌          	| Allows you to remove a permission from a player.        	|
-| `listgperms`   	| ❌          	| Allows you to see the list of permissions for a group.  	|
-| `listpperms`   	| ❌          	| Allows you to see the list of permissions for a player. 	|
+| `/addgperm`     	| ❌          	| Allows you to add a permission to a group.              	|
+| `/removegperm`  	| ❌          	| Allows you to remove a permission to a group.           	|
+| `/addpperm`     	| ❌          	| Allows you to add a permission to a player.             	|
+| `/removepperm`  	| ❌          	| Allows you to remove a permission from a player.        	|
+| `/listgperms`   	| ❌          	| Allows you to see the list of permissions for a group.  	|
+| `/listpperms`   	| ❌          	| Allows you to see the list of permissions for a player. 	|
 
 # Support extension
 
