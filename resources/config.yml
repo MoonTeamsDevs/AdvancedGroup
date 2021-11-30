@@ -1,5 +1,5 @@
-# You can use json, yml, sqlite or mysql.
-provider: "yml"
+# You can use json, yaml, sqlite or mysql.
+provider: "yaml"
 # Optimizes performance and reduces lags. true or false
 cache: true
 database:
