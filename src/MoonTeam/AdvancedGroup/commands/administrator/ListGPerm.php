@@ -29,7 +29,7 @@ class ListGPerm extends Command {
                     $sender->sendMessage(Lang::get("group-no-exist"));
                     return;
                 }
-                $sender->sendMessage(str_replace(["{permissions}", "{group}"], [implode("\n-> ", $provider->getGroupPermissions($args[0])), $args[0]], Lang::get("successfully-list-group-perm")));
+                $sender->sendMessage(str_replace(["{permissions}", "{group}", "{lines}"], [implode("\n-> ", $provider->getGroupPermissions($args[0])), $args[0], "\n"], Lang::get("successfully-list-group-perm")));
                 return;
             }
         }else{

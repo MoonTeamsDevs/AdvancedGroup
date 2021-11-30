@@ -7,11 +7,9 @@ use pocketmine\utils\Config;
 
 interface Provider{
 
-    public function getData();
-
     public function getGroups(): array;
 
-    public function addGroup(string $name);
+    public function addGroup(string $name, bool $default = false);
 
     public function removeGroup(string $name);
 
@@ -37,12 +35,22 @@ interface Provider{
 
     public function addGroupPermission(string $group, string $perm);
 
+    public function removeGroupPermission(string $group, string $perm);
+
     public function addPlayerPermission(string|Player $player, string $perm);
+
+    public function removePlayerPermission(string|Player $player, string $perm);
 
     public function getGroupPermissions(string $group): array;
 
     public function getPlayerPermissions(string|Player $player): array;
 
     public function getPermissions(Player $player): array;
+
+    public function existGroupPermission(string $group, string $permission): bool;
+
+    public function existPlayerPermission(string|Player $player, string $permission): bool;
+
+    public function updateGroupForPlayers(string $groupDelete);
 
 }

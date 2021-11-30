@@ -25,3 +25,7 @@ permissions:
     description: ""
   ag.listpperm:
     description: ""
+  ag.removegperm:
+    description: ""
+  ag.removepperm:
+    description: ""

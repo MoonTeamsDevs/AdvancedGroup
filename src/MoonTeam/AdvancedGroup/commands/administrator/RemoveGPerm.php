@@ -6,8 +6,9 @@ use MoonTeam\AdvancedGroup\Lang;
 use MoonTeam\AdvancedGroup\Main;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\Server;
 
-class RemoveGroup extends Command {
+class RemoveGPerm extends Command {
 
     public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = [])
     {
@@ -19,9 +20,9 @@ class RemoveGroup extends Command {
      */
     public function execute(CommandSender $sender, string $commandLabel, array $args)
     {
-        if ($sender->hasPermission("ag.removegroup")){
-            if (!isset($args[0])){
-                $sender->sendMessage("§cPlease do /removegroup [name].");
+        if ($sender->hasPermission("ag.removegperm")){
+            if (!isset($args[1])){
+                $sender->sendMessage("§cPlease do /removegperm [group] [permission].");
                 return;
             }else{
                 $provider = Main::getInstance()->getProvider();
@@ -29,9 +30,12 @@ class RemoveGroup extends Command {
                     $sender->sendMessage(Lang::get("group-no-exist"));
                     return;
                 }
-                $provider->updateGroupForPlayers($args[0]);
-                $provider->removeGroup($args[0]);
-                $sender->sendMessage(str_replace(["{group}"], [$args[0]], Lang::get("successfully-group-remove")));
+                if (!$provider->existGroupPermission($args[0], $args[1])){
+                    $sender->sendMessage(str_replace(["{group}", "{permission}"], [$args[0], $args[1]], Lang::get("no-have-this-permission-group")));
+                    return;
+                }
+                $provider->removeGroupPermission($args[0], $args[1]);
+                $sender->sendMessage(str_replace(["{group}", "{permission}"], [$args[0], $args[1]], Lang::get("successfully-remove-group-permission")));
                 return;
             }
         }else{

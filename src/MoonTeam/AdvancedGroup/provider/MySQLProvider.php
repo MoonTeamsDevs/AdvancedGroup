@@ -2,9 +2,11 @@
 
 namespace MoonTeam\AdvancedGroup\provider;
 
+use http\Exception\RuntimeException;
 use MoonTeam\AdvancedGroup\Main;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncTask;
 use MoonTeam\AdvancedGroup\utils\Functions;
+use pocketmine\math\VoxelRayTrace;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -194,7 +196,6 @@ class MySQLProvider implements Provider
             $group = "";
             foreach (Functions::$cachedGroup as $name => $value){
                 if ($value["default"] === true){
-                    var_dump($value["default"]);
                     $group = $name;
                 }
             }
@@ -260,7 +261,7 @@ class MySQLProvider implements Provider
             return Functions::$cachedGroup[$group]["format"];
         }else{
             $query = $this->getData()->query("SELECT * FROM `groups` WHERE `name`='" . $group . "'");
-            return $query->fetch_array()["format"];
+            return $query->fetch_array()["format"] ? $query->fetch_array()["format"] : "<{playerName}> {msg}";
         }
     }
 
@@ -269,8 +270,11 @@ class MySQLProvider implements Provider
         if ($player instanceof Player) {
             if (Main::caching()) {
                 Functions::$cachedPlayers[$player->getName()]["group"] = $group;
+                $this->updatePermissions($player);
             } else {
-                Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `group`='" . $group . "' WHERE pseudo='" . $player->getName() . "'"));
+                Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `group`='" . $group . "' WHERE pseudo='" . $player->getName() . "'", function (MySQLAsyncTask $asyncTask, Server $server) use ($player){
+                    $this->updatePermissions($player);
+                }));
             }
         }else{
             if (Main::caching()) {
@@ -297,13 +301,23 @@ class MySQLProvider implements Provider
     {
         if (Main::caching()){
             Functions::$cachedGroup[$group]["permissions"][] = $perm;
-            var_dump(Functions::$cachedGroup[$group]);
+            foreach (Server::getInstance()->getOnlinePlayers() as $player){
+                if ($this->getPlayerGroup($player) === $group){
+                    Main::getInstance()->updatePermissions($player);
+                }
+            }
         }else{
             $query = $this->getData()->query("SELECT * FROM `groups` WHERE `name`='" . $group . "'");
             $permissions = $query->fetch_array()["permissions"];
             $explode = explode(":", $permissions);
             $explode[] = $perm;
-            Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `groups` SET `permissions`='" . implode(":", $explode) . "' WHERE `name`='" . $group . "'"));
+            Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `groups` SET `permissions`='" . implode(":", $explode) . "' WHERE `name`='" . $group . "'", function (MySQLAsyncTask $task, Server $server) use ($group){
+                foreach (Server::getInstance()->getOnlinePlayers() as $player){
+                    if ($this->getPlayerGroup($player) === $group){
+                        $this->updatePermissions($player);
+                    }
+                }
+            }));
         }
     }
 
@@ -315,12 +329,15 @@ class MySQLProvider implements Provider
         if ($player instanceof Player){
             if (Main::caching()){
                 Functions::$cachedPlayers[$player->getName()]["permissions"][] = $perm;
+                Main::getInstance()->updatePermissions($player);
             }else{
                 $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player->getName() . "'");
                 $permissions = $query->fetch_array()["permissions"];
                 $explode = explode(":", $permissions);
                 $explode[] = $perm;
-                Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `permissions`='" . implode(":", $explode) . "' WHERE `pseudo`='" . $player->getName() . "'"));
+                Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `permissions`='" . implode(":", $explode) . "' WHERE `pseudo`='" . $player->getName() . "'", function (MySQLAsyncTask $asyncTask, Server $server) use ($player){
+                    $this->updatePermissions($player);
+                }));
             }
         }else{
             if (Main::caching()){
@@ -344,7 +361,7 @@ class MySQLProvider implements Provider
             return Functions::$cachedGroup[$group]["permissions"];
         }else{
             $query = $this->getData()->query("SELECT * FROM `groups` WHERE `name`='" . $group . "'");
-            return explode(":", $query->fetch_array()["permissions"]);
+            return $query->fetch_array()["permissions"] === "" ? explode(":", $query->fetch_array()["permissions"]) : [];
         }
     }
 
@@ -358,14 +375,14 @@ class MySQLProvider implements Provider
                 return Functions::$cachedPlayers[$player->getName()]["permissions"];
             } else {
                 $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player->getName() . "'");
-                return explode(":", $query->fetch_array()["permissions"]);
+                return $query->fetch_array()["permissions"] ? explode(":", $query->fetch_array()["permissions"]) : [];
             }
         }else{
             if (Main::caching()) {
                 return Functions::$cachedPlayers[$player]["permissions"];
             } else {
                 $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player . "'");
-                return explode(":", $query->fetch_array()["permissions"]);
+                return $query->fetch_array()["permissions"] ? explode(":", $query->fetch_array()["permissions"]) : [];
             }
         }
     }
@@ -378,6 +395,195 @@ class MySQLProvider implements Provider
         $group = $this->getGroupPermissions($this->getPlayerGroup($player));
         $perms = $this->getPlayerPermissions($player);
         return array_merge($group, $perms);
+    }
+
+    /**
+     * @throws ProviderErrorException
+     */
+    public function existGroupPermission(string $group, string $permission): bool
+    {
+        if (Main::caching()){
+            return in_array($permission, Functions::$cachedGroup[$group]["permissions"]);
+        }else{
+            $query = $this->getData()->query("SELECT * FROM `groups` WHERE `name`='" . $group . "'");
+            return in_array($permission, explode(":", $query->fetch_array()["permissions"]));
+        }
+    }
+
+    /**
+     * @throws ProviderErrorException
+     */
+    public function existPlayerPermission(Player|string $player, string $permission): bool
+    {
+        if ($player instanceof Player){
+            if (Main::caching()){
+                return in_array($permission, Functions::$cachedPlayers[$player->getName()]["permissions"]);
+            }else{
+                $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player->getName() . "'");
+                return in_array($permission, explode(":", $query->fetch_array()["permissions"]));
+            }
+        }else{
+            if (Main::caching()){
+                return in_array($permission, Functions::$cachedPlayers[$player]["permissions"]);
+            }else{
+                $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player . "'");
+                return in_array($permission, explode(":", $query->fetch_array()["permissions"]));
+            }
+        }
+    }
+
+    /**
+     * @throws ProviderErrorException
+     */
+    public function removeGroupPermission(string $group, string $perm)
+    {
+        if (Main::caching()){
+            $array = [];
+            foreach (Functions::$cachedGroup[$group]["permissions"] as $id => $permission){
+                if ($permission !== $perm){
+                    $array[] = $permission;
+                }
+            }
+            Functions::$cachedGroup[$group]["permissions"] = $array;
+            foreach (Server::getInstance()->getOnlinePlayers() as $player){
+                if ($this->getPlayerGroup($player) === $group){
+                    Main::getInstance()->updatePermissions($player);
+                }
+            }
+        }else{
+            $query = $this->getData()->query("SELECT * FROM `groups` WHERE `name`='" . $group . "'");
+            $permissions = $query->fetch_array()["permissions"];
+            $explode = explode(":", $permissions);
+            $array = [];
+            foreach ($explode as $id => $permission){
+                if ($permission !== $perm){
+                    $array[] = $permission;
+                }
+            }
+            Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `groups` SET `permissions`='" . implode(":", $array) . "' WHERE `name`='" . $group . "'", function (MySQLAsyncTask $task, Server $server) use ($group){
+                foreach (Server::getInstance()->getOnlinePlayers() as $player){
+                    if ($this->getPlayerGroup($player) === $group){
+                        Main::getInstance()->updatePermissions($player);
+                    }
+                }
+            }));
+        }
+    }
+
+    /**
+     * @throws ProviderErrorException
+     */
+    public function removePlayerPermission(Player|string $player, string $perm)
+    {
+        if ($player instanceof Player){
+            if (Main::caching()){
+                $array = [];
+                foreach (Functions::$cachedPlayers[$player->getName()]["permissions"] as $id => $permission){
+                    if ($permission !== $perm){
+                        $array[] = $permission;
+                    }
+                }
+                Functions::$cachedPlayers[$player->getName()]["permissions"] = $array;
+                Main::getInstance()->updatePermissions($player);
+            }else{
+                $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player->getName() . "'");
+                $permissions = $query->fetch_array()["permissions"];
+                $explode = explode(":", $permissions);
+                $array = [];
+                foreach ($explode as $id => $permission){
+                    if ($permission !== $perm){
+                        $array[] = $permission;
+                    }
+                }
+                Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `permissions`='" . implode(":", $array) . "' WHERE `pseudo`='" . $player->getName() . "'", function (MySQLAsyncTask $asyncTask, Server $server) use ($player){
+                    $this->updatePermissions($player);
+                }));
+            }
+        }else{
+            if (Main::caching()){
+                $array = [];
+                foreach (Functions::$cachedPlayers[$player]["permissions"] as $id => $permission){
+                    if ($permission !== $perm){
+                        $array[] = $permission;
+                    }
+                }
+                Functions::$cachedPlayers[$player]["permissions"] = $array;
+            }else{
+                $query = $this->getData()->query("SELECT * FROM `players` WHERE `pseudo`='" . $player . "'");
+                $permissions = $query->fetch_array()["permissions"];
+                $explode = explode(":", $permissions);
+                $array = [];
+                foreach ($explode as $id => $permission){
+                    if ($permission !== $perm){
+                        $array[] = $permission;
+                    }
+                }
+                Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `permissions`='" . implode(":", $array) . "' WHERE `pseudo`='" . $player . "'"));
+            }
+        }
+    }
+
+    /**
+     * @throws ProviderErrorException
+     */
+    public function updateGroupForPlayers(string $groupDelete)
+    {
+        if (Main::caching()) {
+            foreach (Functions::$cachedPlayers as $player => $value) {
+                $data = Functions::$cachedPlayers[$player];
+                if ($data["group"] === $groupDelete) {
+                    $data["group"] = $this->getDefaultGroup();
+                }
+            }
+        } else {
+            $query = $this->getData()->query("SELECT * FROM `players`");
+            foreach ($query->fetch_all() as $value) {
+                if ($value[1] === $groupDelete) {
+                    Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncTask(Functions::$mysqli, "UPDATE `players` SET `group`='" . $this->getDefaultGroup() . "'"));
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws provider\ProviderErrorException
+     */
+    public function updatePermissions(Player $player){
+        $permissions = [];
+        $provider = $this;
+        foreach ($provider->getPermissions($player) as $permission){
+            if ($permission === '*'){
+                foreach (Server::getInstance()->getPluginManager()->getPermissions() as $perm){
+                    $permissions[$perm->getName()] = true;
+                }
+            }else{
+                $permissions[$permission] = true;
+            }
+        }
+        $attachment = $this->getAttachment($player);
+        $attachment->clearPermissions();
+        $attachment->setPermissions($permissions);
+    }
+
+    public function getValidUUID(Player $player): ?string
+    {
+        $uuid = $player->getUniqueId();
+
+        if ($uuid instanceof UUID){
+            return $uuid->toString();
+        }
+
+        return null;
+    }
+
+    public function getAttachment(Player $player): PermissionAttachment{
+        $uuid = $this->getValidUUID($player);
+
+        if (!isset(Functions::$attachments[$uuid])){
+            throw new RuntimeException($player->getName() . " has empty attachments.");
+        }
+
+        return Functions::$attachments[$uuid];
     }
 
 }

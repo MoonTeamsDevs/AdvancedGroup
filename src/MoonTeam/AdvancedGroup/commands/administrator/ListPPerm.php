@@ -21,7 +21,7 @@ class ListPPerm extends Command {
     {
         if ($sender->hasPermission("ag.listgperm")){
             if (!isset($args[0])){
-                $sender->sendMessage("§cPlease do /listgperm [group].");
+                $sender->sendMessage("§cPlease do /listpperm [group].");
                 return;
             }else{
                 $provider = Main::getInstance()->getProvider();
@@ -29,7 +29,7 @@ class ListPPerm extends Command {
                     $sender->sendMessage(Lang::get("no-in-data"));
                     return;
                 }
-                $sender->sendMessage(str_replace(["{permissions}", "{player}"], [implode("\n-> ", $provider->getPlayerPermissions($args[0])), $args[0]], Lang::get("successfully-list-player-perm")));
+                $sender->sendMessage(str_replace(["{permissions}", "{player}", "{lines}"], [implode("\n-> ", $provider->getPlayerPermissions($args[0])), $args[0], "\n"], Lang::get("successfully-list-player-perm")));
                 return;
             }
         }else{

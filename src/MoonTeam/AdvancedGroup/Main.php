@@ -9,12 +9,16 @@ use MoonTeam\AdvancedGroup\commands\administrator\AddPPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\Groups;
 use MoonTeam\AdvancedGroup\commands\administrator\ListGPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\ListPPerm;
+use MoonTeam\AdvancedGroup\commands\administrator\RemoveGPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\RemoveGroup;
+use MoonTeam\AdvancedGroup\commands\administrator\RemovePPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\SetFormat;
 use MoonTeam\AdvancedGroup\commands\administrator\SetGroup;
 use MoonTeam\AdvancedGroup\listeners\PlayerListener;
+use MoonTeam\AdvancedGroup\provider\JSONProvider;
 use MoonTeam\AdvancedGroup\provider\MySQLProvider;
 use MoonTeam\AdvancedGroup\provider\Provider;
+use MoonTeam\AdvancedGroup\provider\YAMLProvider;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncCache;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncCachePlayers;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLCacheTask;
@@ -31,7 +35,6 @@ class Main extends PluginBase {
 
     public static self $instance;
     public static array $extensions = [];
-    public array $attachments = [];
 
     private $provider;
 
@@ -42,6 +45,13 @@ class Main extends PluginBase {
     public function onEnable()
     {
         self::$instance = $this;
+
+        $provider = $this->getConfig()->get("provider");
+        if ($provider === "mysql" || $provider === "sql"){
+            if ($this->getConfig()->get("cache") !== true){
+                $this->getLogger()->notice("It is better to activate the cache if you use mysql or sql as provider.");
+            }
+        }
 
         Functions::$PUBLIC_DATA = $this->getDataFolder();
 
@@ -58,10 +68,18 @@ class Main extends PluginBase {
     public function onDisable()
     {
         $this->getProvider()->saveGroupData(Functions::$cachedGroup);
-        if (!empty(Server::getInstance()->getOnlinePlayers())){
-            foreach (Server::getInstance()->getOnlinePlayers() as $player){
-                $this->getProvider()->savePlayerData($player);
-                $this->unregisterPlayer($player);
+        if (Main::caching()) {
+            if (!empty(Server::getInstance()->getOnlinePlayers())) {
+                foreach (Server::getInstance()->getOnlinePlayers() as $player) {
+                    $this->getProvider()->savePlayerData($player);
+                    $this->unregisterPlayer($player);
+                }
+            }
+        }else{
+            if (!empty(Server::getInstance()->getOnlinePlayers())) {
+                foreach (Server::getInstance()->getOnlinePlayers() as $player) {
+                    $this->unregisterPlayer($player);
+                }
             }
         }
     }
@@ -70,7 +88,7 @@ class Main extends PluginBase {
      * @throws provider\ProviderErrorException
      */
     public function initProvider(){
-        switch (Main::getInstance()->getConfig()->get("provider")){
+        switch ($this->getConfig()->get("provider")){
             case "mysql":
                 $database = $this->getConfig()->get("database");
                 Functions::$mysqli = [
@@ -83,10 +101,16 @@ class Main extends PluginBase {
                 $this->provider = new MySQLProvider();
                 $this->getServer()->getAsyncPool()->submitTask(new SetDefaultGroupTask(Functions::$mysqli));
                 break;
+            case "yaml":
+                $this->provider = new YAMLProvider();
+                break;
+            case "json":
+                $this->provider = new JSONProvider();
+                break;
         }
     }
 
-    public function getProvider(): MySQLProvider{
+    public function getProvider(): JSONProvider|YAMLProvider|MySQLProvider{
         return $this->provider;
     }
 
@@ -102,6 +126,27 @@ class Main extends PluginBase {
             Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncCache($database["host"], $database["username"], $database["password"], $database["database"], $database["port"]));
             Server::getInstance()->getAsyncPool()->submitTask(new MySQLAsyncCachePlayers($database["host"], $database["username"], $database["password"], $database["database"], $database["port"]));
         }
+        if ($provider instanceof YAMLProvider || $provider instanceof JSONProvider){
+            $array = [];
+            foreach ($provider->getPlayersData() as $player => $value){
+                $data = $provider->getPlayersData()->get($player);
+                $array[$player] = [
+                    "permissions" => (!empty($data["permissions"]) ? explode(":", $data["permissions"]) : []),
+                    "group" => $data["group"]
+                ];
+            }
+            Functions::$cachedPlayers = $array;
+            $array = [];
+            foreach ($provider->getGroupData() as $group => $value){
+                $data = $provider->getGroupData()->get($group);
+                $array[$group] = [
+                    "permissions" => (!empty($data["permissions"]) ? explode(":", $data["permissions"]) : []),
+                    "default" => $data["default"],
+                    "format" => $data["format"]
+                ];
+            }
+            Functions::$cachedGroup = $array;
+        }
     }
 
     private function initCommands(){
@@ -114,7 +159,9 @@ class Main extends PluginBase {
             new AddGPerm("addgperm", "Allows you to add a permission to a group.", "addgperm", []),
             new AddPPerm("addpperm", "Allows you to add a permission to a player.", "addpperm", []),
             new ListGPerm("listgperm", "Allows you to see the list of permissions for a group.", "listgperm", []),
-            new ListPPerm("listpperm", "Allows you to see the list of permissions for a player.", "listpperm", [])
+            new ListPPerm("listpperm", "Allows you to see the list of permissions for a player.", "listpperm", []),
+            new RemoveGPerm("removegperm", "Allows you to remove a permission to a group.", "removegperm", ["rmgperm"]),
+            new RemovePPerm("removepperm", "Allows you to remove a permission from a player.", "removepperm", ["rmpperm"])
         ]);
     }
 
@@ -148,26 +195,26 @@ class Main extends PluginBase {
     public function getAttachment(Player $player): PermissionAttachment{
         $uuid = $this->getValidUUID($player);
 
-        if (!isset($this->attachments[$uuid])){
+        if (!isset(Functions::$attachments[$uuid])){
             throw new RuntimeException($player->getName() . " has empty attachments.");
         }
 
-        return $this->attachments[$uuid];
+        return Functions::$attachments[$uuid];
     }
 
     public function registerPlayer(Player $player){
         $uuid = $this->getValidUUID($player);
 
-        if (!isset($this->attachments[$uuid])){
+        if (!isset(Functions::$attachments[$uuid])){
             $attachment = $player->addAttachment($this);
-            $this->attachments[$uuid] = $attachment;
+            Functions::$attachments[$uuid] = $attachment;
             $this->updatePermissions($player);
         }
     }
 
     public function isRegistered(Player $player): bool{
         $uuid = $this->getValidUUID($player);
-        return isset($this->attachments[$uuid]);
+        return isset(Functions::$attachments[$uuid]);
     }
 
 
@@ -177,8 +224,9 @@ class Main extends PluginBase {
     public function updatePermissions(Player $player){
         $permissions = [];
         $provider = $this->getProvider();
+        var_dump($provider->getPermissions($player));
         foreach ($provider->getPermissions($player) as $permission){
-            if ($permission = '*'){
+            if ($permission === '*'){
                 foreach ($this->getServer()->getPluginManager()->getPermissions() as $perm){
                     $permissions[$perm->getName()] = true;
                 }
@@ -195,10 +243,10 @@ class Main extends PluginBase {
         $uuid = $this->getValidUUID($player);
 
         if ($uuid != null){
-            if (isset($this->attachments[$uuid])){
-                $player->removeAttachment($this->attachments[$uuid]);
+            if (isset(Functions::$attachments[$uuid])){
+                $player->removeAttachment(Functions::$attachments[$uuid]);
             }
-            unset($this->attachments[$uuid]);
+            unset(Functions::$attachments[$uuid]);
         }
     }
 

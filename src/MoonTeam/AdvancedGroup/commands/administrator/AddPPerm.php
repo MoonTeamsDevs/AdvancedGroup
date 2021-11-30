@@ -29,11 +29,13 @@ class AddPPerm extends Command {
                 $provider = Main::getInstance()->getProvider();
                 $player = Server::getInstance()->getPlayer($args[0]);
                 if ($player instanceof Player){
+                    if ($provider->existPlayerPermission($player, $args[1])){
+                        $sender->sendMessage(str_replace(["{player}"], [$player->getName()], Lang::get("have-this-permission-player")));
+                        return;
+                    }
                     $provider->addPlayerPermission($player, $args[1]);
-                    Main::getInstance()->updatePermissions($player);
                 }
-                $provider->addGroupPermission($args[0], $args[1]);
-                $sender->sendMessage(str_replace(["{group}", "{permissions}"], [$args[0], $args[1]], Lang::get("successfully-add-group-permission")));
+                $sender->sendMessage(str_replace(["{group}", "{permission}"], [$args[0], $args[1]], Lang::get("successfully-add-group-permission")));
                 return;
             }
         }else{

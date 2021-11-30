@@ -15,6 +15,7 @@ class Functions {
     public static array $cachedPlayers = [];
     public static array $mysqli = [];
     public static string $defaultGroup = "";
+    public static array $attachments = [];
 
     public static function replace(Player $player, string $string): string{
         if (Main::$extensions["SimpleFaction"] === true) $string = str_replace(["{faction_name}", "{faction_rank}", "{faction_power}", "{faction_money}"], [SimpleFaction::getPlayerFaction($player), SimpleFaction::getPlayerRank($player), SimpleFaction::getFactionPower($player), SimpleFaction::getFactionMoney($player)], $string);
