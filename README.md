@@ -8,6 +8,18 @@
 - EconomyAPI and SkyBlock plugins support.
 - Added SQL provider. (uses SQLITE3)
 
+# Feature
+
+| Feature                                            | AdvancedGroup | PurePerms |
+|----------------------------------------------------|---------------|-----------|
+| MySQL & SQLITE3 Provider                           | ✅             | ✅         |
+| YAML & JSON Provider                               | ✅             | ✅         |
+| Cache                                              | ✅             | ❌         |
+| Dependent on an additional plugin to work properly | ❌             | ✅         |
+| Multi Language Support                             | ✅             | ✅         |
+| Extension system/add-ons                           | ✅             | ✅         |
+| Uses little perfomance                             | ✅             | ❌         |
+
 # List of available orders
 
 | Command Name   	| Default Op 	| Description                                             	|
