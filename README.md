@@ -2,6 +2,12 @@
 
 - Group plugin allowing easy permission dispersal. Possibility to add permissions to a player eventually. **Available only with PocketMine-MP version 3, soon available for PocketMine-MP version 4.**
 
+# Coming soon
+
+- Affiliate a name tag to a group.
+- EconomyAPI and SkyBlock plugins support.
+- Added SQL provider. (uses SQLITE3)
+
 # List of available orders
 
 | Command Name   	| Default Op 	| Description                                             	|
