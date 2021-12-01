@@ -1,5 +1,7 @@
 # You can use json, yaml, sqlite or mysql.
 provider: "yaml"
+# Language available fr (français), en (english), es (spanish)
+lang: "en"
 # Optimizes performance and reduces lags. true or false
 cache: true
 database:

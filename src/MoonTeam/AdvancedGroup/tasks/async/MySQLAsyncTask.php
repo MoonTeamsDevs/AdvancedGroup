@@ -24,7 +24,11 @@ class MySQLAsyncTask extends AsyncTask {
     {
         $database = $this->mysql;
         $db = new \mysqli($database["host"], $database["username"], $database["password"], $database["database"], $database["port"]);
-        $db->query($this->query);
+        $query = $db->query($this->query);
+        if (is_null($query)){
+            $this->cancelRun();
+        }
+        $query->close();
     }
 
     public function onCompletion(Server $server)

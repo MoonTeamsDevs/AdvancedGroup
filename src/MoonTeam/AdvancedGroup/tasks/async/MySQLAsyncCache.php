@@ -32,18 +32,23 @@ class MySQLAsyncCache extends AsyncTask {
         $cache = [];
         $mysqli = new \mysqli($this->host, $this->username, $this->password, $this->database, $this->port);
         $query = $mysqli->query("SELECT * FROM `groups`");
-        foreach ($query->fetch_all() as $value){
-            $cache[$value[0]] = [
-                "permissions" => (!empty($value[1]) ? explode(":", $value[1]) : []),
-                "default" => (bool)$value[2],
-                "format" => $value[3],
-                "name" => $value[0]
-            ];
-            if ($value[2] === true){
-                Functions::$defaultGroup = $value[0];
+        if (!is_null($query)) {
+            foreach ($query->fetch_all() as $value) {
+                $cache[$value[0]] = [
+                    "permissions" => (!empty($value[1]) ? explode(":", $value[1]) : []),
+                    "default" => (bool)$value[2],
+                    "format" => $value[3],
+                    "name" => $value[0]
+                ];
+                if ($value[2] === true) {
+                    Functions::$defaultGroup = $value[0];
+                }
             }
+            $query->close();
+            $this->setResult($cache);
+        }else{
+            $this->cancelRun();
         }
-        $this->setResult($cache);
     }
 
     public function onCompletion(Server $server)

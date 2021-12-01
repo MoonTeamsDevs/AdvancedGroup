@@ -22,7 +22,7 @@ class Groups extends Command {
         if ($sender->hasPermission("ag.groups")){
             $provider = Main::getInstance()->getProvider();
             if (empty($provider->getGroups())){
-                $sender->sendMessage("§cThere are no groups currently created.");
+                $sender->sendMessage(Lang::get("no-group-created"));
                 return;
             }else{
                 $groups = $provider->getGroups();

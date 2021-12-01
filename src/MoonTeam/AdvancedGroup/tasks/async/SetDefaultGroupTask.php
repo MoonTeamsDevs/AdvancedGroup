@@ -20,10 +20,15 @@ class SetDefaultGroupTask extends AsyncTask {
         $database = $this->mysql;
         $db = new \mysqli($database["host"], $database["username"], $database["password"], $database["database"], $database["port"]);
         $query = $db->query("SELECT * FROM `groups`");
-        foreach ($query->fetch_all() as $value){
-            if ((bool)$value[2] === true){
-                $this->setResult($value[0]);
+        if (!is_null($query)) {
+            foreach ($query->fetch_all() as $value) {
+                if ((bool)$value[2] === true) {
+                    $this->setResult($value[0]);
+                }
             }
+            $query->close();
+        }else{
+            $this->cancelRun();
         }
     }
 

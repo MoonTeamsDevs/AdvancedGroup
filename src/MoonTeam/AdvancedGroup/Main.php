@@ -128,7 +128,7 @@ class Main extends PluginBase {
         }
         if ($provider instanceof YAMLProvider || $provider instanceof JSONProvider){
             $array = [];
-            foreach ($provider->getPlayersData() as $player => $value){
+            foreach ($provider->getPlayersData()->getAll() as $player => $value){
                 $data = $provider->getPlayersData()->get($player);
                 $array[$player] = [
                     "permissions" => (!empty($data["permissions"]) ? explode(":", $data["permissions"]) : []),
@@ -137,7 +137,7 @@ class Main extends PluginBase {
             }
             Functions::$cachedPlayers = $array;
             $array = [];
-            foreach ($provider->getGroupData() as $group => $value){
+            foreach ($provider->getGroupData()->getAll() as $group => $value){
                 $data = $provider->getGroupData()->get($group);
                 $array[$group] = [
                     "permissions" => (!empty($data["permissions"]) ? explode(":", $data["permissions"]) : []),
@@ -224,7 +224,6 @@ class Main extends PluginBase {
     public function updatePermissions(Player $player){
         $permissions = [];
         $provider = $this->getProvider();
-        var_dump($provider->getPermissions($player));
         foreach ($provider->getPermissions($player) as $permission){
             if ($permission === '*'){
                 foreach ($this->getServer()->getPluginManager()->getPermissions() as $perm){
