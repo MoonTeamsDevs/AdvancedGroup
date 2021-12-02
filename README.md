@@ -5,7 +5,6 @@
 # Coming soon
 
 - Affiliate a name tag to a group.
-- EconomyAPI and SkyBlock plugins support.
 - Added SQL provider. (uses SQLITE3)
 
 # Feature
@@ -19,6 +18,7 @@
 | Multi Language Support                             | ✅             | ✅         |
 | Extension system/add-ons                           | ✅             | ✅         |
 | Uses little perfomance                             | ✅             | ❌         |
+| PM4 Support                                        | ✅             | ❌         |
 
 # List of available orders
 
@@ -43,7 +43,9 @@
 | [`SimpleFaction`](https://github.com/AyzrixYTB/SimpleFaction) 	| ✅            	| {faction_name} {faction_power} {faction_rank} {faction_money} 	|
 | [`FactionsPro`](https://github.com/AyzrixYTB/SimpleFaction)   	| ✅            	| {faction_name} {faction_power}                                	|
 | [`PiggyFactions`](https://github.com/DaPigGuy/PiggyFactions/tree/master) 	| ✅            	| {faction_name} {faction_power} {faction_rank}                 	|
-| [`SkyBlock`](https://github.com/andresbytes/SkyBlock/tree/stable)      	| ❌            	| **Soon**                                                      	|
+| [`SkyBlock`](https://github.com/andresbytes/SkyBlock/tree/stable)      	| ✅            	|  {island_blocks} {island_members} {island_rank} {island_size} |
+| [`RedSkyBlock`](https://github.com/RedCraftGH/RedSkyBlock/tree/master)      	| ✅    {island_members} {island_rank} {island_size} {island_value} {island_locked_status}|
+| [`EconomyAPI`](https://github.com/RedCraftGH/RedSkyBlock/tree/master)      	| ✅            	| {money}                                                     	|
 
 # Credit
 
