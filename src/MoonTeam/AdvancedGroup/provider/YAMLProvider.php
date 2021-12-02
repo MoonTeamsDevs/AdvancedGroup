@@ -6,6 +6,7 @@ use http\Exception\RuntimeException;
 use MoonTeam\AdvancedGroup\Main;
 use MoonTeam\AdvancedGroup\utils\Functions;
 use pocketmine\permission\PermissionAttachment;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -467,7 +468,7 @@ class YAMLProvider implements Provider {
         $provider = $this;
         foreach ($provider->getPermissions($player) as $permission){
             if ($permission === '*'){
-                foreach (Server::getInstance()->getPluginManager()->getPermissions() as $perm){
+                foreach (PermissionManager::getInstance()->getPermissions() as $perm){
                     $permissions[$perm->getName()] = true;
                 }
             }else{

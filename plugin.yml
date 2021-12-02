@@ -14,24 +14,24 @@ softdepend:
 
 permissions:
   ag.addgroup:
-    description: ""
+    default: op
   ag.removegroup:
-    description: ""
+    default: op
   ag.addgperm:
-    description: ""
+    default: op
   ag.addpperm:
-    description: ""
+    default: op
   ag.groups:
-    description: ""
+    default: op
   ag.setformat:
-    description: ""
+    default: op
   ag.setgroup:
-    description: ""
-  ag.listgperm:
-    description: ""
-  ag.listpperm:
-    description: ""
+    default: op
+  ag.listgperms:
+    default: op
+  ag.listpperms:
+    default: op
   ag.removegperm:
-    description: ""
+    default: op
   ag.removepperm:
-    description: ""
+    default: op

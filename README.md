@@ -5,6 +5,7 @@
 # Coming soon
 
 - Affiliate a name tag to a group.
+- EconomyAPI and SkyBlock plugins support.
 - Added SQL provider. (uses SQLITE3)
 
 # Feature
@@ -18,23 +19,22 @@
 | Multi Language Support                             | ✅             | ✅         |
 | Extension system/add-ons                           | ✅             | ✅         |
 | Uses little perfomance                             | ✅             | ❌         |
-| PM4 Support                                        | ✅             | ❌         |
 
 # List of available orders
 
 | Command Name   	| Default Op 	| Description                                             	|
 |----------------	|------------	|---------------------------------------------------------	|
-| `/addgroup`    	| ✅          	| Allows you to add a new group.                          	|
-| `/removegroup` 	| ✅          	| Allows you to delete a group.                           	|
-| `/groups`      	| ✅          	| Allows you to see the existing groups.                  	|
-| `/setgroup`    	| ✅          	| Allows you to define a player's group.                  	|
-| `/setformat`   	| ✅          	| Allows you to redefine the format of a group.           	|
-| `/addgperm`     	| ✅          	| Allows you to add a permission to a group.              	|
-| `/removegperm`  	| ✅          	| Allows you to remove a permission to a group.           	|
-| `/addpperm`     	| ✅          	| Allows you to add a permission to a player.             	|
-| `/removepperm`  	| ✅          	| Allows you to remove a permission from a player.        	|
-| `/listgperms`   	| ✅          	| Allows you to see the list of permissions for a group.  	|
-| `/listpperms`   	| ✅          	| Allows you to see the list of permissions for a player. 	|
+| `/addgroup`    	| ❌          	| Allows you to add a new group.                          	|
+| `/removegroup` 	| ❌          	| Allows you to delete a group.                           	|
+| `/groups`      	| ❌          	| Allows you to see the existing groups.                  	|
+| `/setgroup`    	| ❌          	| Allows you to define a player's group.                  	|
+| `/setformat`   	| ❌          	| Allows you to redefine the format of a group.           	|
+| `/addgperm`     	| ❌          	| Allows you to add a permission to a group.              	|
+| `/removegperm`  	| ❌          	| Allows you to remove a permission to a group.           	|
+| `/addpperm`     	| ❌          	| Allows you to add a permission to a player.             	|
+| `/removepperm`  	| ❌          	| Allows you to remove a permission from a player.        	|
+| `/listgperms`   	| ❌          	| Allows you to see the list of permissions for a group.  	|
+| `/listpperms`   	| ❌          	| Allows you to see the list of permissions for a player. 	|
 
 # Support extension
 
@@ -43,9 +43,7 @@
 | [`SimpleFaction`](https://github.com/AyzrixYTB/SimpleFaction) 	| ✅            	| {faction_name} {faction_power} {faction_rank} {faction_money} 	|
 | [`FactionsPro`](https://github.com/AyzrixYTB/SimpleFaction)   	| ✅            	| {faction_name} {faction_power}                                	|
 | [`PiggyFactions`](https://github.com/DaPigGuy/PiggyFactions/tree/master) 	| ✅            	| {faction_name} {faction_power} {faction_rank}                 	|
-| [`SkyBlock`](https://github.com/andresbytes/SkyBlock/tree/stable)      	| ✅            	|  {island_blocks} {island_members} {island_rank} {island_size} |
-| [`RedSkyBlock`](https://github.com/RedCraftGH/RedSkyBlock/tree/master)      	| ✅    {island_members} {island_rank} {island_size} {island_value} {island_locked_status}|
-| [`EconomyAPI`](https://github.com/RedCraftGH/RedSkyBlock/tree/master)      	| ✅            	| {money}                                                     	|
+| [`SkyBlock`](https://github.com/andresbytes/SkyBlock/tree/stable)      	| ❌            	| **Soon**                                                      	|
 
 # Credit
 

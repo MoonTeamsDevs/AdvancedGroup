@@ -7,8 +7,8 @@ use MoonTeam\AdvancedGroup\commands\administrator\AddGPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\AddGroup;
 use MoonTeam\AdvancedGroup\commands\administrator\AddPPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\Groups;
-use MoonTeam\AdvancedGroup\commands\administrator\ListGPerm;
-use MoonTeam\AdvancedGroup\commands\administrator\ListPPerm;
+use MoonTeam\AdvancedGroup\commands\administrator\ListGPerms;
+use MoonTeam\AdvancedGroup\commands\administrator\ListPPerms;
 use MoonTeam\AdvancedGroup\commands\administrator\RemoveGPerm;
 use MoonTeam\AdvancedGroup\commands\administrator\RemoveGroup;
 use MoonTeam\AdvancedGroup\commands\administrator\RemovePPerm;
@@ -23,6 +23,7 @@ use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncCachePlayers;
 use MoonTeam\AdvancedGroup\tasks\async\SetDefaultGroupTask;
 use MoonTeam\AdvancedGroup\utils\Functions;
 use pocketmine\permission\PermissionAttachment;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
@@ -136,7 +137,7 @@ class Main extends PluginBase {
             foreach ($provider->getPlayersData()->getAll() as $player => $value){
                 $data = $provider->getPlayersData()->get($player);
                 $array[$player] = [
-                    "permissions" => (!empty($data["permissions"]) ? explode(":", $data["permissions"]) : []),
+                    "permissions" => (!empty($data["permissions"]) ? $data["permissions"] : []),
                     "group" => $data["group"]
                 ];
             }
@@ -145,7 +146,7 @@ class Main extends PluginBase {
             foreach ($provider->getGroupData()->getAll() as $group => $value){
                 $data = $provider->getGroupData()->get($group);
                 $array[$group] = [
-                    "permissions" => (!empty($data["permissions"]) ? explode(":", $data["permissions"]) : []),
+                    "permissions" => (!empty($data["permissions"]) ? $data["permissions"] : []),
                     "default" => $data["default"],
                     "format" => $data["format"]
                 ];
@@ -163,8 +164,8 @@ class Main extends PluginBase {
             new SetFormat("setformat", "Allows you to redefine the format of a group.", "setformat", []),
             new AddGPerm("addgperm", "Allows you to add a permission to a group.", "addgperm", []),
             new AddPPerm("addpperm", "Allows you to add a permission to a player.", "addpperm", []),
-            new ListGPerm("listgperms", "Allows you to see the list of permissions for a group.", "listgperm", []),
-            new ListPPerm("listpperms", "Allows you to see the list of permissions for a player.", "listpperm", []),
+            new ListGPerms("listgperms", "Allows you to see the list of permissions for a group.", "listgperm", []),
+            new ListPPerms("listpperms", "Allows you to see the list of permissions for a player.", "listpperm", []),
             new RemoveGPerm("removegperm", "Allows you to remove a permission to a group.", "removegperm", ["rmgperm"]),
             new RemovePPerm("removepperm", "Allows you to remove a permission from a player.", "removepperm", ["rmpperm"])
         ]);
@@ -234,7 +235,7 @@ class Main extends PluginBase {
         $provider = $this->getProvider();
         foreach ($provider->getPermissions($player) as $permission){
             if ($permission === '*'){
-                foreach ($this->getServer()->getPluginManager()->getPermissions() as $perm){
+                foreach (PermissionManager::getInstance()->getPermissions() as $perm){
                     $permissions[$perm->getName()] = true;
                 }
             }else{
