@@ -1,6 +1,6 @@
 # AdvancedGroup
 
-- Group plugin allowing easy permission dispersal. Possibility to add permissions to a player eventually. **Available only with PocketMine-MP version 3, soon available for PocketMine-MP version 4.**
+- Group plugin allowing easy permission dispersal. Possibility to add permissions to a player eventually. **Available only with PocketMine-MP version 4.**
 
 # Coming soon
 
