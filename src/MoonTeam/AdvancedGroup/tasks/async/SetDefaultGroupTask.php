@@ -8,14 +8,14 @@ use pocketmine\Server;
 
 class SetDefaultGroupTask extends AsyncTask {
 
-    private $mysql;
+    private array $mysql;
 
     public function __construct(array $mysql)
     {
         $this->mysql = $mysql;
     }
 
-    public function onRun()
+    public function onRun(): void
     {
         $database = $this->mysql;
         $db = new \mysqli($database["host"], $database["username"], $database["password"], $database["database"], $database["port"]);
@@ -32,7 +32,7 @@ class SetDefaultGroupTask extends AsyncTask {
         }
     }
 
-    public function onCompletion(Server $server)
+    public function onCompletion(): void
     {
         Functions::$defaultGroup = $this->getResult();
     }

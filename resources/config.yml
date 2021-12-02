@@ -23,3 +23,9 @@ extensions:
   FactionsPro: false
   # {faction_name} {faction_rank} {faction_power}
   PiggyFactions: false
+  # {money}
+  EconomyAPI: false
+  # {island_blocks} {island_members} {island_rank} {island_size}
+  SkyBlock: false
+  # {island_members} {island_rank} {island_size} {island_value} {island_locked_status}
+  RedSkyBlock: false

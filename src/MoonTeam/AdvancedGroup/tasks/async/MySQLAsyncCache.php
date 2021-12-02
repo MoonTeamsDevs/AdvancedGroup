@@ -11,12 +11,11 @@ use pocketmine\Server;
 class MySQLAsyncCache extends AsyncTask {
 
     public array $cache = [];
-    public static $callable1;
-    private $host;
-    private $username;
-    private $password;
-    private $database;
-    private $port;
+    private string $host;
+    private string $username;
+    private string $password;
+    private string $database;
+    private int $port;
 
     public function __construct(string $host, string $username, string $password, string $database, int $port)
     {
@@ -27,7 +26,7 @@ class MySQLAsyncCache extends AsyncTask {
         $this->port = $port;
     }
 
-    public function onRun()
+    public function onRun(): void
     {
         $cache = [];
         $mysqli = new \mysqli($this->host, $this->username, $this->password, $this->database, $this->port);
@@ -51,7 +50,7 @@ class MySQLAsyncCache extends AsyncTask {
         }
     }
 
-    public function onCompletion(Server $server)
+    public function onCompletion(): void
     {
         Functions::$cachedGroup = $this->getResult();
     }

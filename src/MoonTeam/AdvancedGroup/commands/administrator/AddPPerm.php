@@ -6,7 +6,7 @@ use MoonTeam\AdvancedGroup\Lang;
 use MoonTeam\AdvancedGroup\Main;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class AddPPerm extends Command {
@@ -27,7 +27,7 @@ class AddPPerm extends Command {
                 return;
             }else{
                 $provider = Main::getInstance()->getProvider();
-                $player = Server::getInstance()->getPlayer($args[0]);
+                $player = Server::getInstance()->getPlayerByPrefix($args[0]);
                 if ($player instanceof Player){
                     if ($provider->existPlayerPermission($player, $args[1])){
                         $sender->sendMessage(str_replace(["{player}"], [$player->getName()], Lang::get("have-this-permission-player")));

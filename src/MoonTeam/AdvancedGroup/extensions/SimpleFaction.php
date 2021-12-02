@@ -3,7 +3,7 @@
 namespace MoonTeam\AdvancedGroup\extensions;
 
 use Ayzrix\SimpleFaction\API\FactionsAPI;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 

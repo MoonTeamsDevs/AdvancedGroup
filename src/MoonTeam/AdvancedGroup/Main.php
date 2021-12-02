@@ -17,19 +17,17 @@ use MoonTeam\AdvancedGroup\commands\administrator\SetGroup;
 use MoonTeam\AdvancedGroup\listeners\PlayerListener;
 use MoonTeam\AdvancedGroup\provider\JSONProvider;
 use MoonTeam\AdvancedGroup\provider\MySQLProvider;
-use MoonTeam\AdvancedGroup\provider\Provider;
 use MoonTeam\AdvancedGroup\provider\YAMLProvider;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncCache;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncCachePlayers;
-use MoonTeam\AdvancedGroup\tasks\async\MySQLCacheTask;
 use MoonTeam\AdvancedGroup\tasks\async\SetDefaultGroupTask;
 use MoonTeam\AdvancedGroup\utils\Functions;
 use pocketmine\permission\PermissionAttachment;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\Config;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 
 class Main extends PluginBase {
 
@@ -42,7 +40,10 @@ class Main extends PluginBase {
         return self::$instance;
     }
 
-    public function onEnable()
+    /**
+     * @throws provider\ProviderErrorException
+     */
+    protected function onEnable(): void
     {
         self::$instance = $this;
 
@@ -65,20 +66,24 @@ class Main extends PluginBase {
         $this->initExtension();
     }
 
-    public function onDisable()
+    protected function onDisable(): void
     {
         $this->getProvider()->saveGroupData(Functions::$cachedGroup);
         if (Main::caching()) {
             if (!empty(Server::getInstance()->getOnlinePlayers())) {
                 foreach (Server::getInstance()->getOnlinePlayers() as $player) {
-                    $this->getProvider()->savePlayerData($player);
-                    $this->unregisterPlayer($player);
+                    if ($player instanceof Player) {
+                        $this->getProvider()->savePlayerData($player);
+                        $this->unregisterPlayer($player);
+                    }
                 }
             }
         }else{
             if (!empty(Server::getInstance()->getOnlinePlayers())) {
                 foreach (Server::getInstance()->getOnlinePlayers() as $player) {
-                    $this->unregisterPlayer($player);
+                    if ($player instanceof Player) {
+                        $this->unregisterPlayer($player);
+                    }
                 }
             }
         }
@@ -202,6 +207,9 @@ class Main extends PluginBase {
         return Functions::$attachments[$uuid];
     }
 
+    /**
+     * @throws provider\ProviderErrorException
+     */
     public function registerPlayer(Player $player){
         $uuid = $this->getValidUUID($player);
 

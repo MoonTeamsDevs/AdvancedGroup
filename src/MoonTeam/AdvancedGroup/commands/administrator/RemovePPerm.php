@@ -6,7 +6,7 @@ use MoonTeam\AdvancedGroup\Lang;
 use MoonTeam\AdvancedGroup\Main;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class RemovePPerm extends Command{
@@ -30,7 +30,7 @@ class RemovePPerm extends Command{
                 if ($provider->hasAccount($args[0])){
                     if ($provider->existPlayerPermission($args[0], $args[1])){
                         $provider->removePlayerPermission($args[0], $args[1]);
-                        $player = Server::getInstance()->getPlayer($args[0]);
+                        $player = Server::getInstance()->getPlayerByPrefix($args[0]);
                         if ($player instanceof Player){
                             Main::getInstance()->updatePermissions($player);
                         }

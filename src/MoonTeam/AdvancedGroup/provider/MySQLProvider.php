@@ -6,13 +6,11 @@ use http\Exception\RuntimeException;
 use MoonTeam\AdvancedGroup\Main;
 use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncTask;
 use MoonTeam\AdvancedGroup\utils\Functions;
-use pocketmine\math\VoxelRayTrace;
 use pocketmine\permission\PermissionAttachment;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\Config;
-use pocketmine\utils\UUID;
+use pocketmine\UUID;
 
 class MySQLProvider implements Provider
 {

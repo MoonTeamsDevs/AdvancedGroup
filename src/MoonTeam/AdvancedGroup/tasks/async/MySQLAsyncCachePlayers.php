@@ -24,7 +24,7 @@ class MySQLAsyncCachePlayers extends AsyncTask {
         $this->port = $port;
     }
 
-    public function onRun()
+    public function onRun(): void
     {
         $cache = [];
         $mysqli = new \mysqli($this->host, $this->username, $this->password, $this->database, $this->port);
@@ -43,7 +43,7 @@ class MySQLAsyncCachePlayers extends AsyncTask {
         }
     }
 
-    public function onCompletion(Server $server)
+    public function onCompletion(): void
     {
         Functions::$cachedPlayers = $this->getResult();
     }

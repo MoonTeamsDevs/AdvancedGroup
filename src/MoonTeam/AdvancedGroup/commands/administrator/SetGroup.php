@@ -6,7 +6,7 @@ use MoonTeam\AdvancedGroup\Lang;
 use MoonTeam\AdvancedGroup\Main;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class SetGroup extends Command {
@@ -27,7 +27,7 @@ class SetGroup extends Command {
                 return;
             }else{
                 $provider = Main::getInstance()->getProvider();
-                $player = Server::getInstance()->getPlayer($args[0]);
+                $player = Server::getInstance()->getPlayerByPrefix($args[0]);
                 if ($player instanceof Player){
                     if ($provider->hasAccount($player)){
                         if ($provider->existGroup($args[1])){

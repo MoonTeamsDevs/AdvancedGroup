@@ -16,11 +16,15 @@ class PlayerListener implements Listener {
      * @throws \MoonTeam\AdvancedGroup\provider\ProviderErrorException
      */
     public function onPreLogin(PlayerPreLoginEvent $event){
-        $player = $event->getPlayer();
+        $player = $event->getPlayerInfo();
         $provider = Main::getInstance()->getProvider();
-        if (!$provider->hasAccount($player)){
-            $provider->createAccount($player);
+        if (!$provider->hasAccount($player->getUsername())){
+            $provider->createAccount($player->getUsername());
         }
+    }
+
+    public function onJoin(PlayerJoinEvent $event){
+        $player = $event->getPlayer();
         if (!Main::getInstance()->isRegistered($player)){
             Main::getInstance()->registerPlayer($player);
         }

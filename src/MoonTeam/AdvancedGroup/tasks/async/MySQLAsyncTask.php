@@ -20,7 +20,7 @@ class MySQLAsyncTask extends AsyncTask {
         $this->call = $call;
     }
 
-    public function onRun()
+    public function onRun(): void
     {
         $database = $this->mysql;
         $db = new \mysqli($database["host"], $database["username"], $database["password"], $database["database"], $database["port"]);
@@ -31,10 +31,10 @@ class MySQLAsyncTask extends AsyncTask {
         $query->close();
     }
 
-    public function onCompletion(Server $server)
+    public function onCompletion(): void
     {
         if ($this->call !== null){
-            call_user_func($this->call, $this, $server);
+            call_user_func($this->call, $this, Server::getInstance());
         }
     }
 

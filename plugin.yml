@@ -1,14 +1,16 @@
 name: AdvancedGroup
-version: 1.0.1-PRE-RELEASE
+version: 1.0.3-PRE-RELEASE
 authors:
   - MoonTeam
   - Zoumi
 main: MoonTeam\AdvancedGroup\Main
-api: 3.0.0
+api: 4.0.0
 softdepend:
   - SimpleFaction
   - FactionsPro
   - PiggyFactions
+  - RedSkyBlock
+  - SkyBlock
 
 permissions:
   ag.addgroup:

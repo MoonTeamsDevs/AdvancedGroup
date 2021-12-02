@@ -4,13 +4,12 @@ namespace MoonTeam\AdvancedGroup\provider;
 
 use http\Exception\RuntimeException;
 use MoonTeam\AdvancedGroup\Main;
-use MoonTeam\AdvancedGroup\tasks\async\MySQLAsyncTask;
 use MoonTeam\AdvancedGroup\utils\Functions;
 use pocketmine\permission\PermissionAttachment;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
-use pocketmine\utils\UUID;
+use pocketmine\UUID;
 
 class YAMLProvider implements Provider {
 

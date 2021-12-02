@@ -3,7 +3,7 @@
 namespace MoonTeam\AdvancedGroup\extensions;
 
 use DaPigGuy\PiggyFactions\players\PlayerManager;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class PiggyFactions {
 
