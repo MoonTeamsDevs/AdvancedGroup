@@ -6,6 +6,7 @@
 
 - Affiliate a name tag to a group.
 - Added SQL provider. (uses SQLITE3)
+- test
 
 # Feature
 
