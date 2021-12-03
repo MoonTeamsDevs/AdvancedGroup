@@ -28,14 +28,14 @@ use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\Config;
-use pocketmine\uuid\UUID;
+use pocketmine\UUID;
 
 class Main extends PluginBase {
 
     public static self $instance;
     public static array $extensions = [];
 
-    private $provider;
+    private MySQLProvider|YAMLProvider|JSONProvider $provider;
 
     public static function getInstance(): self{
         return self::$instance;
